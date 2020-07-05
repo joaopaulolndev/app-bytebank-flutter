@@ -2,6 +2,8 @@ import 'package:bytebank/models/transferencia.dart';
 import 'package:bytebank/screens/transferencia/formulario.dart';
 import 'package:flutter/material.dart';
 
+const _tituloAppBar = 'Transferências';
+
 class ListaTransferencia extends StatefulWidget {
 
   final List<Transferencia> _transferencia = List();
@@ -11,12 +13,11 @@ class ListaTransferencia extends StatefulWidget {
     return ListaTransferenciasState();
   }
 }
-
 class ListaTransferenciasState extends State<ListaTransferencia> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Transferências'),),
+      appBar: AppBar(title: Text(_tituloAppBar),),
       body: ListView.builder(
         itemCount: widget._transferencia.length,
         itemBuilder: (context, indice) {
@@ -27,23 +28,22 @@ class ListaTransferenciasState extends State<ListaTransferencia> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          final Future<Transferencia> future = Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormularioTransferencia();
-          }));
-          future.then((transferenciaRecebida) {
-            Future.delayed(Duration(seconds: 1), () {
-              debugPrint('Chegou no then do future');
-              debugPrint('$transferenciaRecebida');
-              if(transferenciaRecebida != null) {
-                setState(() {
-                  widget._transferencia.add(transferenciaRecebida);
-                });
-              }
-            });
-          });
+          })).then(
+            (transferenciaRecebida) => _atualiza(transferenciaRecebida)
+          );
         },
       ),
     );
+  }
+
+  void _atualiza(Transferencia transferenciaRecebida) {
+    if(transferenciaRecebida != null) {
+      setState(() {
+        widget._transferencia.add(transferenciaRecebida);
+      });
+    }
   }
 }
 
